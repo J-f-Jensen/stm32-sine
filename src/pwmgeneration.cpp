@@ -36,7 +36,7 @@
 #define DIGIT_TO_DEGREE(a) FP_FROMINT(angle) / (65536 / 360)
 #define FRQ_DIVIDER 8192 //PWM ISR callback frequency divider
 
-uint16_t PwmGeneration::pwmfrq;
+uint16_t PwmGeneration::pwmfrq = 1;
 uint16_t PwmGeneration::angle;
 s32fp    PwmGeneration::ampnom;
 uint16_t PwmGeneration::slipIncr;
@@ -99,7 +99,7 @@ int PwmGeneration::GetCpuLoad()
 static void ConfigureChargeController()
 {
    chargeController.SetCallingFrequency(rcc_apb2_frequency / FRQ_DIVIDER);
-   chargeController.SetMinMaxY(0, (1 << pwmdigits) - 100);
+   chargeController.SetMinMaxY(0, FP_TOINT((Param::Get(Param::chargemax) * (1 << pwmdigits)) / 100));
    chargeController.SetGains(Param::GetInt(Param::chargekp), Param::GetInt(Param::chargeki));
    chargeController.SetRef(0);
    chargeController.ResetIntegrator();
